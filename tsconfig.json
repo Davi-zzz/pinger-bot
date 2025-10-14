@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    // These tell TypeScript to use Node.js's ES Module resolution rules
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    
+    // Other critical settings:
+    "target": "ES2022",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
+    // ... ensure you have "paths" configured if you are using aliases
+  }
+}
