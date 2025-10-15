@@ -8,7 +8,7 @@ export function setClient(client:Client) {
 
 export function getClient() {
   if (!clientRef) {
-    throw new Error('O cliente Discord não foi definido. Chame setClient em app.js.');
+    throw new Error('the discord client was not defined');
   }
   return clientRef;
 }

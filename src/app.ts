@@ -25,18 +25,17 @@ client.on('interactionCreate', async (interaction) => {
 
 client.login(process.env.DISCORD_TOKEN);
 
-// Roda a cada 30 segundos
-cron.schedule('*/30 * * * * *', () => {
-  console.log('⏱️ Executando tarefa a cada 30 segundos:', new Date().toISOString());
+cron.schedule('*/5 * * * *', () => {
   serverOptions = FsHelper.load();
-  serverOptions.forEach(({ endpoint, ports, channel_id }) => {
-    if (endpoint && channel_id)
-      ports && ports.length > 0
-        ? ports.forEach((p) => testConnection(endpoint, p, channel_id ))
-        : [80, 443].forEach((p) => testConnection(endpoint, p, channel_id));
+  serverOptions.forEach(({ endpoints, channel_id }) => {
+    if (endpoints && endpoints.length > 0 && channel_id)
+      endpoints.map((ep) => {
+        const { port, href: endpoint } = new URL(ep.includes('http') ? ep : `http://${ep}`);
+        port.length > 0
+          ? testConnection({ endpoint, channel_id, ports: [+port] })
+          : testConnection({ endpoint, channel_id });
+      });
   });
-  // Aqui você chama sua função, por exemplo:
-  // testConnection('https://api.exemplo.com', 443);
 });
 
 await registerCommands();
