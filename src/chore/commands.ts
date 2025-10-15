@@ -17,11 +17,18 @@ export const commands = [
     .addStringOption((op) =>
       op.setName('endpoint').setDescription('the endpoint url').setRequired(true),
     ),
+  new SlashCommandBuilder()
+    .setName('checkendpoint')
+    .setDescription('the endpoint that i should ping for you')
+    .addStringOption((op) =>
+      op.setName('url').setDescription('the endpoint url').setRequired(true),
+    ),
 ].map((cmd) => cmd.toJSON());
 
 export enum COMMANDS_LIST {
   SET_CHANNEL = 'setchannel',
   SET_ENDPOINTS = 'setendpoints',
+  CHECK_ENDPOINT = 'checkendpoint',
 }
 
 export function checkCommand(command: string) {
@@ -32,6 +39,7 @@ export function checkCommand(command: string) {
 export async function registerCommands() {
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
   //   !!for test
+  // todo
   //   try {
   //     await rest.put(Routes.applicationCommands(process.env.CLIENT_ID!), { body: commands });
   //   } catch (err) {

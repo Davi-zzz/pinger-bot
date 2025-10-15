@@ -10,11 +10,15 @@ export const dispatcher = async (interaction: Interaction<CacheType>) => {
     case COMMANDS_LIST.SET_CHANNEL:
       await CommandController.setChannel(interaction);
       break;
-    
+
     case COMMANDS_LIST.SET_ENDPOINTS:
       await CommandController.setEndpoint(interaction);
       break;
-    
+
+    case COMMANDS_LIST.CHECK_ENDPOINT:
+      await CommandController.checkEndpoint(interaction);
+      break;
+
     default:
       break;
   }
