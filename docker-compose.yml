@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  node-zerotier:
+    build: 
+      context: .
+      args: 
+        AUTH_SECRET: ${AUTH_SECRET}
+        IDT_PUBLIC: ${IDT_PUBLIC}
+        IDT_SECRET: ${IDT_SECRET}
+        ZT_NETWORK: ${ZT_NETWORK}
+    container_name: node-zerotier
+    environment:
+      - ZT_NETWORK=${ZT_NETWORK}
+      - AUTH_SECRET=${AUTH_SECRET}
+      - IDT_PUBLIC=${IDT_PUBLIC}
+      - IDT_SECRET=${IDT_SECRET}
+    network_mode: host
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    volumes:
+      - zerotier-data:/var/lib/zerotier-one
+    restart: always
+
+volumes:
+  zerotier-data:
