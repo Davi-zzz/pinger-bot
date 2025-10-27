@@ -11,8 +11,9 @@ export interface TestConnectionParams {
 
 export interface TestsResult {
   message: string;
-  portsStatus: PortResults[];
+  portsStatus: TestStatus[];
   status: STATUS;
+  responseTime: number;
 }
 type PortResults = {
   port: number;
@@ -23,5 +24,21 @@ export enum STATUS {
   OK = 'OK',
   OFFLINE = 'OFFLINE',
 }
+export type TestPortResult = {
+  port: number;
+  result: Promise<TestStatus>;
+};
 
+export type TestStatus = {
+  port: number;
+} & PartialResult;
+
+type PartialResult = {
+  status: STATUS;
+  responseTime: number;
+};
+export type PingResult = {
+  endpoint: string;
+} & PartialResult;
+export type Reports = { [endpoint: string]: number[] };
 export type IndexedServerOptions = Map<string, ServerOptions>;

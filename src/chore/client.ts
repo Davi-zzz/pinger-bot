@@ -1,8 +1,8 @@
 import { Client } from 'discord.js';
 
-let clientRef:Client;
+let clientRef: Client;
 
-export function setClient(client:Client) {
+export function setClient(client: Client) {
   clientRef = client;
 }
 
