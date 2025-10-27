@@ -1,17 +1,24 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import { config } from 'dotenv';
 import cron from 'node-cron';
-import { registerCommands } from './chore/commands.js';
-import { testConnection } from './chore/pinger.js';
-import { IndexedServerOptions } from './types/server.options.type.js';
+import {
+  getClient,
+  registerCommands,
+  setClient,
+  testConnection,
+} from './chore/index.js';
+import { IndexedServerOptions } from './types/types.js';
 import { dispatcher, FsHelper } from './utils/index.js';
-import { getClient, setClient } from './chore/client.js';
 
 config();
 
 let serverOptions: IndexedServerOptions = new Map();
 
-setClient(new Client({ intents: [GatewayIntentBits.Guilds] }));
+setClient(
+  new Client({
+    intents: [GatewayIntentBits.Guilds],
+  }),
+);
 const client = getClient();
 
 client.once('ready', () => {
@@ -25,17 +32,31 @@ client.on('interactionCreate', async (interaction) => {
 
 client.login(process.env.DISCORD_TOKEN);
 
-cron.schedule('*/5 * * * *', () => {
+cron.schedule('*/5 * * * *', async () => {
   serverOptions = FsHelper.load();
-  serverOptions.forEach(({ endpoints, channel_id }) => {
+  for (const [serverId, { endpoints, channel_id }] of serverOptions.entries()) {
     if (endpoints && endpoints.length > 0 && channel_id)
-      endpoints.map((ep) => {
-        const { port, href: endpoint } = new URL(ep.includes('http') ? ep : `http://${ep}`);
-        port.length > 0
-          ? testConnection({ endpoint, channel_id, ports: [+port] })
-          : testConnection({ endpoint, channel_id });
-      });
-  });
+      for (const ep of endpoints) {
+        const { port, href: endpoint } = new URL(
+          ep.includes('http') ? ep : `http://${ep}`,
+        );
+        const results =
+          port.length > 0
+            ? await testConnection({ endpoint, channel_id, ports: [+port] })
+            : await testConnection({ endpoint, channel_id });
+
+        if (results) {
+          FsHelper.saveReport(
+            {
+              endpoint: ep,
+              status: results.status,
+              responseTime: results.responseTime,
+            },
+            serverId,
+          );
+        }
+      }
+  }
 });
 
 await registerCommands();

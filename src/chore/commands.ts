@@ -1,8 +1,15 @@
 import { ChannelType, REST, Routes, SlashCommandBuilder } from 'discord.js';
 
+export enum COMMANDS_LIST {
+  SET_CHANNEL = 'setchannel',
+  SET_ENDPOINTS = 'setendpoints',
+  CHECK_ENDPOINT = 'checkendpoint',
+  CHECK_STATUS = 'checkstatus',
+}
+
 export const commands = [
   new SlashCommandBuilder()
-    .setName('setchannel')
+    .setName(COMMANDS_LIST.SET_CHANNEL)
     .setDescription('Determine the channel where i can send messages')
     .addChannelOption((op) =>
       op
@@ -12,24 +19,24 @@ export const commands = [
         .setRequired(true),
     ),
   new SlashCommandBuilder()
-    .setName('setendpoints')
+    .setName(COMMANDS_LIST.SET_ENDPOINTS)
     .setDescription('the endpoint that i should ping for you')
     .addStringOption((op) =>
-      op.setName('endpoint').setDescription('the endpoint url').setRequired(true),
+      op
+        .setName('endpoint')
+        .setDescription('the endpoint url')
+        .setRequired(true),
     ),
   new SlashCommandBuilder()
-    .setName('checkendpoint')
+    .setName(COMMANDS_LIST.CHECK_ENDPOINT)
     .setDescription('the endpoint that i should ping for you')
     .addStringOption((op) =>
       op.setName('url').setDescription('the endpoint url').setRequired(true),
     ),
+  new SlashCommandBuilder()
+    .setName(COMMANDS_LIST.CHECK_STATUS)
+    .setDescription('generate a report of endpoints status'),
 ].map((cmd) => cmd.toJSON());
-
-export enum COMMANDS_LIST {
-  SET_CHANNEL = 'setchannel',
-  SET_ENDPOINTS = 'setendpoints',
-  CHECK_ENDPOINT = 'checkendpoint',
-}
 
 export function checkCommand(command: string) {
   const commandList = Object.values(COMMANDS_LIST) as string[];
@@ -45,7 +52,10 @@ export async function registerCommands() {
   //   } catch (err) {
   //     console.error(err);
   //   }
-  await rest.put(Routes.applicationGuildCommands(process.env.APP_ID!, process.env.GUILD_ID!), {
-    body: commands,
-  });
+  await rest.put(
+    Routes.applicationGuildCommands(process.env.APP_ID!, process.env.GUILD_ID!),
+    {
+      body: commands,
+    },
+  );
 }
